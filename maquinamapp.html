@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inventario</title>
+</head>
+<body>
+    <div id="inventario"></div>
+    <input type="number" id="codigo" placeholder="Ingresa el código del producto">
+    <button onclick="comprarProducto()">Comprar</button>
+    <div id="mensaje"></div>
+
+    <script>
+        const productos = ["Chicle", "Refresco", "Chocolate", "Galletas", "Caramelos"];
+        let cantidades = [5, 3, 6, 2, 4]; // Cantidades disponibles
+
+        function mostrarInventario() {
+            const inventarioDiv = document.getElementById("inventario");
+            inventarioDiv.innerHTML = "<h2>Inventario:</h2>";
+            productos.forEach((producto, index) => {
+                inventarioDiv.innerHTML += `${index + 1}. ${producto} - Cantidad: ${cantidades[index]}<br>`;
+            });
+        }
+
+        function procesarPago() {
+            const moneda = 1; // Valor fijo de la moneda
+            return moneda === 1; // Siempre devuelve true en este caso
+        }
+
+        function entregarProducto(codigo) {
+            cantidades[codigo - 1]--;
+            return `¡Has comprado ${productos[codigo - 1]}!`;
+        }
+
+        function sugerirProducto() {
+            for (let i = 0; i < cantidades.length; i++) {
+                if (cantidades[i] > 0) {
+                    return `Te sugerimos: ${productos[i]}`;
+                }
+            }
+            return "No hay productos disponibles."; // Esta línea debe estar aquí
+        }
+
+        function comprarProducto() {
+            const codigo = parseInt(document.getElementById("codigo").value);
+            const mensajeDiv = document.getElementById("mensaje");
+
+            if (codigo < 1 || codigo > 5) {
+                mensajeDiv.innerHTML = "Código inválido. Por favor, elige un código entre 1 y 5.";
+                return;
+            }
+
+            if (cantidades[codigo - 1] === 0) {
+                mensajeDiv.innerHTML = `Producto agotado. ${sugerirProducto()}`; // Usar backticks
+                return;
+            }
+
+            if (procesarPago()) {
+                mensajeDiv.innerHTML = entregarProducto(codigo);
+            } else {
+                mensajeDiv.innerHTML = "Pago no procesado. Intenta de nuevo.";
+            }
+
+            mostrarInventario();
+        }
+
+        // Mostrar inventario al cargar la página
+        mostrarInventario();
+    </script>
+</body>
+</html>

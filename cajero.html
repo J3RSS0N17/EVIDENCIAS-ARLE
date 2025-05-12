@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Cajero Automático</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 20px;
+    max-width: 350px;
+    background: #f4f6f8;
+    color: #333;
+  }
+  h1 {
+    text-align: center;
+    color: #2a7ae2;
+  }
+  .balance {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+  input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    font-size: 1em;
+    margin-bottom: 10px;
+  }
+  button {
+    width: 100%;
+    padding: 10px;
+    font-size: 1em;
+    margin-bottom: 10px;
+    background-color: #2a7ae2;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+  }
+  button:hover {
+    background-color: #225db0;
+  }
+  .message {
+    margin-top: 10px;
+    min-height: 20px;
+    font-weight: bold;
+    text-align: center;
+  }
+  .transactions {
+    margin-top: 20px;
+  }
+  .transactions h2 {
+    font-size: 1em;
+    margin-bottom: 6px;
+  }
+  .transactions ul {
+    padding-left: 20px;
+    max-height: 120px;
+    overflow-y: auto;
+    background: white;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+  }
+  .transactions li {
+    margin-bottom: 4px;
+    font-size: 0.9em;
+  }
+  .deposit {
+    color: green;
+  }
+  .withdraw {
+    color: red;
+  }
+</style>
+</head>
+<body>
+  <h1>Cajero Automático</h1>
+  <div class="balance">Saldo actual: $<span id="saldo">0</span></div>
+  <input type="number" id="monto" placeholder="Ingrese monto" />
+  <button id="btnDepositar">Depositar</button>
+  <button id="btnRetirar">Retirar</button>
+  <div class="message" id="mensaje"></div>
+
+  <div class="transactions">
+    <h2>Últimas 5 transacciones:</h2>
+    <ul id="historial"></ul>
+  </div>
+
+<script>
+  (function() {
+    let saldo = 0;
+    const transacciones = [];
+
+    const saldoEl = document.getElementById('saldo');
+    const montoEl = document.getElementById('monto');
+    const mensajeEl = document.getElementById('mensaje');
+    const historialEl = document.getElementById('historial');
+
+    function actualizarSaldo() {
+      saldoEl.textContent = saldo.toFixed(2);
+    }
+
+    function agregarTransaccion(monto) {
+      if (transacciones.length === 5) {
+        transacciones.shift();
+      }
+      transacciones.push(monto);
+      actualizarHistorial();
+    }
+
+    function actualizarHistorial() {
+      historialEl.innerHTML = '';
+      for (let i = transacciones.length - 1; i >= 0; i--) {
+        const li = document.createElement('li');
+        const t = transacciones[i];
+        li.textContent = (t > 0 ? '+$' + t.toFixed(2) : '-$' + Math.abs(t).toFixed(2));
+        li.className = t > 0 ? 'deposit' : 'withdraw';
+        historialEl.appendChild(li);
+      }
+    }
+
+    function mostrarMensaje(msg, esError = false) {
+      mensajeEl.textContent = msg;
+      mensajeEl.style.color = esError ? 'red' : 'green';
+    }
+
+    document.getElementById('btnDepositar').addEventListener('click', () => {
+      const monto = parseFloat(montoEl.value);
+      if (isNaN(monto) || monto <= 0) {
+        mostrarMensaje('Ingrese un monto válido para depositar', true);
+        return;
+      }
+      saldo += monto;
+      agregarTransaccion(monto);
+      actualizarSaldo();
+      mostrarMensaje(`Depositaste $${monto.toFixed(2)}`);
+      montoEl.value = '';
+    });
+
+    document.getElementById('btnRetirar').addEventListener('click', () => {
+      const monto = parseFloat(montoEl.value);
+      if (isNaN(monto) || monto <= 0) {
+        mostrarMensaje('Ingrese un monto válido para retirar', true);
+        return;
+      }
+      if (monto > 500) {
+        mostrarMensaje('No se puede retirar más de $500 en una sola transacción', true);
+        return;
+      }
+      if (monto > saldo) {
+        mostrarMensaje('Saldo insuficiente', true);
+        return;
+      }
+      saldo -= monto;
+      agregarTransaccion(-monto);
+      actualizarSaldo();
+      mostrarMensaje(`Retiraste $${monto.toFixed(2)}`);
+      montoEl.value = '';
+    });
+
+    // inicializar saldo y transacciones
+    actualizarSaldo();
+  })();
+</script>
+</body>
+</html>
+
+```
+
